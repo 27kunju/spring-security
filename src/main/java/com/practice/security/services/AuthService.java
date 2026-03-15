@@ -26,9 +26,19 @@ public class AuthService {
     private final JwtService jwtService;
 
 
-    public void register(UserRequestDto request ){
-        users user = new users();
+    public void register(UserRequestDto request) {
+        // Check if username already exists
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already taken");
+        }
 
+        // Check if email already exists
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        // Create new user
+        users user = new users();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
